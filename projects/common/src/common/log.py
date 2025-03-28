@@ -128,6 +128,8 @@ def get_logger() -> logging.Logger:
         from prefect import get_run_logger
 
         prefect_logger = get_run_logger()
+        # TODO: remove this and use loguru later on
+        return prefect_logger  # type: ignore
         extra = getattr(prefect_logger, "extra")
 
     except Exception:

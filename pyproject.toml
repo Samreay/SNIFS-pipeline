@@ -29,3 +29,7 @@ common = { workspace = true }
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+
+[tool.prefect]
+logging.level = "INFO"
+server.ephemeral.enabled = true

@@ -1,4 +1,4 @@
-from common import data_flow
+from common import data_flow, get_logger
 from pydantic import Field, FilePath
 from pydantic_settings import BaseSettings
 
@@ -9,7 +9,8 @@ from pydantic_settings import BaseSettings
 class PipelineSettings(BaseSettings):
     # TODO: Probably want this as FileURL so we can remotely fetch the file
     # TODO: are the initial observations for red and blue channels saved out to separate files?
-    science_file: FilePath = Field(description="Location of the science file")
+    # TODO: remove the | None here when I get example files from Daniel
+    science_file: FilePath | None = Field(default=None, description="Location of the science file")
 
     # TODO: Need to define what a raster file is again
     raster_file: FilePath | None = Field(default=None, description="Location of the raster file")
@@ -27,4 +28,11 @@ class PipelineSettings(BaseSettings):
 
 @data_flow()
 def reduce_observation(settings: PipelineSettings) -> None:
-    pass
+    logger = get_logger()
+    logger.info("Starting reduce_observation flow")
+    logger.info(f"Settings: {settings.model_dump_json(indent=2)}")
+
+
+if __name__ == "__main__":
+    settings = PipelineSettings()
+    reduce_observation(settings)
