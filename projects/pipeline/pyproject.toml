@@ -8,7 +8,10 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "astropy>=7.0.1",
     "common",
+    "pandera>=0.23.1",
+    "polars>=1.26.0",
     "prefect>=3.2.14",
     "pydantic>=2.11.0",
     "pydantic-settings>=2.8.1",

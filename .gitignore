@@ -61,3 +61,5 @@ __pypackages__/
 
 metastore_db
 *.jar
+data
+.data_dump

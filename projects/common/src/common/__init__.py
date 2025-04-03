@@ -1,4 +1,4 @@
-from common.prefect_utils import data_flow, data_task
+from common.prefect_utils import pipeline_flow, pipeline_task
 from common.log import get_logger
 
-__all__ = ["data_task", "data_flow", "get_logger"]
+__all__ = ["pipeline_task", "pipeline_flow", "get_logger"]

@@ -36,7 +36,7 @@ FLOW_DEFAULT_KWARGS = {
 }
 
 
-def data_task(**kwargs):
+def pipeline_task(**kwargs):
     def decorate(func: Callable) -> Callable:
         # tracer = get_tracer(settings.service)
         # final_kwargs = {**TASK_DEFAULT_KWARGS, **kwargs}
@@ -63,7 +63,7 @@ def data_task(**kwargs):
     return decorate
 
 
-def data_flow(**kwargs):
+def pipeline_flow(**kwargs):
     def decorate(func: Callable) -> Callable:
         final_kwargs = {**FLOW_DEFAULT_KWARGS, **kwargs}
         return flow(**final_kwargs)(func)
