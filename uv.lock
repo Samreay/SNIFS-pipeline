@@ -289,12 +289,16 @@ version = "0.1.0"
 source = { editable = "projects/common" }
 dependencies = [
     { name = "loguru" },
+    { name = "pandera" },
+    { name = "polars" },
     { name = "prefect" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "loguru", specifier = ">=0.7.3" },
+    { name = "pandera", specifier = ">=0.23.1" },
+    { name = "polars", specifier = ">=1.26.0" },
     { name = "prefect", specifier = ">=3.2.14" },
 ]
 

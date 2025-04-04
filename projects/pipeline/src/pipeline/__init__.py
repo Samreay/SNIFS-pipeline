@@ -1,5 +1,5 @@
-from pipeline.reduce_channel import reduce_channel
+from pipeline.reduce_channel_exposure import reduce_channel_exposure
 
 __all__ = [
-    "reduce_channel",
+    "reduce_channel_exposure",
 ]

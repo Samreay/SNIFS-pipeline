@@ -17,7 +17,7 @@ def on_finish(flow: Flow, flow_run: FlowRun, state: State):
 
 
 TASK_DEFAULT_KWARGS = {
-    "retries": 2,
+    "retries": 0,
     "retry_delay_seconds": 10,
     "log_prints": False,
     "timeout_seconds": 3600,  # An hour timeout per task
