@@ -11,7 +11,6 @@ from pipeline.tasks.cfht_weather import update_cfht_weather
 def reduce_channel_exposure(config: ChannelReduction) -> None:
     logger = get_logger()
     logger.info(f"Starting channel exposure reduction with settings:\n {config.model_dump_json(indent=2)}")
-    logger.info("Running the config through the resolver to fill all unspecified inputs")
 
     # Load in the existing file store
     resolver = build_filestore()
@@ -21,7 +20,6 @@ def reduce_channel_exposure(config: ChannelReduction) -> None:
 
     # Ensure that our config is fully specified using the resolver
     config.resolve_missing(resolver)
-    logger.info(f"Final config:\n {config.model_dump_json(indent=2)}")
 
     # And now we can run the reduction
     augment_science_file()

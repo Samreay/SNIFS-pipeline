@@ -1,3 +1,4 @@
+from common.log import get_logger
 from pipeline.resolver.resolver import Resolver
 from pydantic import Field, FilePath
 from pydantic_settings import BaseSettings
@@ -43,6 +44,8 @@ class ChannelReduction(BaseSettings):
         Resolves the paths for the channel reduction config.
         This is a bit of a hack, but it works for now.
         """
+        logger = get_logger()
+        logger.info("Resolving missing paths for channel reduction config")
         primary = resolver.get_file_metadata(self.science_file)
         if not self.arc_file:
             self.arc_file = resolver.get_match_path("ARC", primary)
@@ -50,3 +53,5 @@ class ChannelReduction(BaseSettings):
             self.continuum_files = resolver.get_match_paths("FLAT", primary)
         if not self.weather_file:
             self.weather_file = resolver.get_match_path("WEATHER", primary)
+
+        logger.info(f"Final config:\n {self.model_dump_json(indent=2)}")
