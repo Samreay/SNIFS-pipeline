@@ -1,5 +1,5 @@
 from functools import cached_property
-from pipeline.resolver.common import FileStoreEntry, FileStoreDataFrame
+from pipeline.resolver.common import FileStoreEntry, FileStoreDataFrame, extract_file_details
 from pydantic import BaseModel, Field, field_validator
 from pathlib import Path
 import polars as pl
@@ -8,19 +8,10 @@ from pipeline.resolver import file_match_registry
 
 class Resolver(BaseModel):
     # TODO: discuss how cloud focused this should be. Ideally this resolve had both local pref and cloud fetching built in.
-    file_store_path: Path = Field(default_factory=lambda: Path(__file__).parents[5] / "data/store.parquet")
+    file_store_path: Path = Field(default_factory=lambda: Path(__file__).parents[5] / "data/filestore.parquet")
 
     data_path: Path = Field(default_factory=lambda: Path(__file__).parents[5] / "data")
-    run_folder: str = Field(default="runs")
-    processing_folder: str = Field(default="processing")
-
-    @property
-    def run_folder_path(self) -> Path:
-        return self.data_path / self.run_folder
-
-    @property
-    def processing_folder_path(self) -> Path:
-        return self.data_path / self.processing_folder
+    output_path: Path = Field(default_factory=lambda: Path(__file__).parents[5] / "output")
 
     @field_validator("file_store_path")
     @classmethod
@@ -34,8 +25,36 @@ class Resolver(BaseModel):
 
     @cached_property
     def file_store(self) -> FileStoreDataFrame:
-        assert self.file_store_path.exists(), f"File store not found at {self.file_store_path}."
+        assert self.file_store_path.exists(), (
+            f"File store not found at {self.file_store_path}. Please build it via `build_filestore`"
+        )
         return pl.read_parquet(self.file_store_path).pipe(FileStoreDataFrame)
+
+    def ensure_file_exists(self, file_path: Path) -> None:
+        file_store = self.file_store
+        entry = extract_file_details(file_path, file_path.relative_to(self.data_path))
+
+        # Get a hash of the dataframe as it exists now
+        current_hash = hash(tuple(file_store.drop("time_added").hash_rows().to_list()))
+
+        # add the entry to the dataframe and see if the hash has changed
+        new_file_store = (
+            pl.concat([file_store, entry], how="diagonal_relaxed", rechunk=True)
+            .sort("file_path", "time_added")
+            .unique("file_path", keep="last", maintain_order=True)
+        )
+
+        # Get a hash of the new dataframe
+        new_hash = hash(tuple(file_store.drop("time_added").hash_rows().to_list()))
+
+        # If the hash has changed, we need to update the file store
+        if current_hash != new_hash:
+            # Save the new file store
+            self.save_filestore(FileStoreDataFrame(new_file_store))
+
+    def save_filestore(self, df: FileStoreDataFrame) -> None:
+        self.file_store_path.parent.mkdir(parents=True, exist_ok=True)
+        df.sort("file_path").write_parquet(self.file_store_path)
 
     def get_file_metadata(self, file_path: Path) -> FileStoreEntry:
         """

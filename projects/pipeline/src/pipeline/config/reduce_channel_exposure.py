@@ -48,3 +48,5 @@ class ChannelReduction(BaseSettings):
             self.arc_file = resolver.get_match_path("ARC", primary)
         if not self.continuum_files:
             self.continuum_files = resolver.get_match_paths("FLAT", primary)
+        if not self.weather_file:
+            self.weather_file = resolver.get_match_path("WEATHER", primary)

@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "astropy>=7.0.1",
     "common",
+    "matplotlib>=3.10.1",
     "pandera>=0.23.1",
     "polars>=1.26.0",
     "prefect>=3.2.14",
