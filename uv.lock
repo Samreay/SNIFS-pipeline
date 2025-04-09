@@ -289,6 +289,7 @@ version = "0.1.0"
 source = { editable = "projects/common" }
 dependencies = [
     { name = "loguru" },
+    { name = "numpy" },
     { name = "pandera" },
     { name = "polars" },
     { name = "prefect" },
@@ -297,6 +298,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "loguru", specifier = ">=0.7.3" },
+    { name = "numpy", specifier = ">=2.2.4" },
     { name = "pandera", specifier = ">=0.23.1" },
     { name = "polars", specifier = ">=1.26.0" },
     { name = "prefect", specifier = ">=3.2.14" },
@@ -1193,6 +1195,7 @@ dependencies = [
     { name = "astropy" },
     { name = "common" },
     { name = "matplotlib" },
+    { name = "numpy" },
     { name = "pandera" },
     { name = "polars" },
     { name = "prefect" },
@@ -1205,6 +1208,7 @@ requires-dist = [
     { name = "astropy", specifier = ">=7.0.1" },
     { name = "common", editable = "projects/common" },
     { name = "matplotlib", specifier = ">=3.10.1" },
+    { name = "numpy", specifier = ">=2.2.4" },
     { name = "pandera", specifier = ">=0.23.1" },
     { name = "polars", specifier = ">=1.26.0" },
     { name = "prefect", specifier = ">=3.2.14" },

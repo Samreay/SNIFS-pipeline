@@ -11,6 +11,7 @@ dependencies = [
     "astropy>=7.0.1",
     "common",
     "matplotlib>=3.10.1",
+    "numpy>=2.2.4",
     "pandera>=0.23.1",
     "polars>=1.26.0",
     "prefect>=3.2.14",

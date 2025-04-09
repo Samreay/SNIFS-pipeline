@@ -7,7 +7,7 @@ import polars as pl
 
 @pipeline_task()
 def build_filestore(refresh: bool = False) -> Resolver:
-    resolver = Resolver()
+    resolver = Resolver.create()
 
     logger = get_logger()
     file_store = resolver.file_store if resolver.file_store_exists() else None

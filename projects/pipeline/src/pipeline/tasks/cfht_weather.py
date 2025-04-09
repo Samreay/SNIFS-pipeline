@@ -67,11 +67,11 @@ def plot_weather_data(
 
 @pipeline_task()
 def update_cfht_weather(
-    resolver: Resolver,
     lookback_time_days: int = 7,
     refresh: bool = False,
     make_plots: bool = False,
 ) -> None:
+    resolver = Resolver.create()
     expected_location = resolver.data_path / "misc/type=WEATHER/station=CFHT/weather.parquet"
     logger = get_logger()
     if should_fetch_data(expected_location):
@@ -129,16 +129,12 @@ def update_cfht_weather(
     else:
         logger.info(f"Weather data already exists at {expected_location} and is up to date. Not fetching.")
 
-    resolver.ensure_file_exists(expected_location)
-
     if make_plots:
         plot_weather_data(WeatherDataFrame(pl.read_parquet(expected_location)), resolver.output_path)
 
 
 if __name__ == "__main__":
-    resolver = Resolver()
     update_cfht_weather.fn(
-        resolver,
         lookback_time_days=60,
         refresh=True,
         make_plots=True,

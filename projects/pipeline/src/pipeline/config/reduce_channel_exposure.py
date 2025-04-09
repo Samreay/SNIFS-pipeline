@@ -39,6 +39,8 @@ class ChannelReduction(BaseSettings):
 
     use_cache: bool = Field(default=True, description="Use cached data when possible")
 
+    make_plots: bool = Field(default=True, description="Make plots of the data")
+
     def resolve_missing(self, resolver: Resolver) -> None:
         """
         Resolves the paths for the channel reduction config.

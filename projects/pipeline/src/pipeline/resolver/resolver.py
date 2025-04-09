@@ -1,17 +1,18 @@
 from functools import cached_property
 from pipeline.resolver.common import FileStoreEntry, FileStoreDataFrame, extract_file_details
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, field_validator
 from pathlib import Path
 import polars as pl
 from pipeline.resolver import file_match_registry
+from pipeline.global_settings.global_settings import settings
 
 
 class Resolver(BaseModel):
     # TODO: discuss how cloud focused this should be. Ideally this resolve had both local pref and cloud fetching built in.
-    file_store_path: Path = Field(default_factory=lambda: Path(__file__).parents[5] / "data/filestore.parquet")
+    file_store_path: Path
 
-    data_path: Path = Field(default_factory=lambda: Path(__file__).parents[5] / "data")
-    output_path: Path = Field(default_factory=lambda: Path(__file__).parents[5] / "output")
+    data_path: Path
+    output_path: Path
 
     @field_validator("file_store_path")
     @classmethod
@@ -25,10 +26,18 @@ class Resolver(BaseModel):
 
     @cached_property
     def file_store(self) -> FileStoreDataFrame:
-        assert self.file_store_path.exists(), (
-            f"File store not found at {self.file_store_path}. Please build it via `build_filestore`"
-        )
+        assert (
+            self.file_store_path.exists()
+        ), f"File store not found at {self.file_store_path}. Please build it via `build_filestore`"
         return pl.read_parquet(self.file_store_path).pipe(FileStoreDataFrame)
+
+    @classmethod
+    def create(cls, **kwargs) -> "Resolver":
+        kwargs = {"data_path": settings.data_path, "output_path": settings.output_path}
+        kwargs.update(kwargs)
+        if "file_store_path" not in kwargs:
+            kwargs["file_store_path"] = kwargs["data_path"] / "filestore.parquet"
+        return cls(**kwargs)
 
     def ensure_file_exists(self, file_path: Path) -> None:
         file_store = self.file_store

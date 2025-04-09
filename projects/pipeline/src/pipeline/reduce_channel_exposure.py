@@ -3,7 +3,13 @@ from common.prefect_utils import pipeline_flow
 from common.log import get_logger
 from pipeline.build_filestore import build_filestore
 from pipeline.config import ChannelReduction
-from pipeline.tasks import preprocess, augment_science_file, correct_dichoric, remove_continuum, calibrate_with_flats
+from pipeline.tasks import (
+    preprocess_exposure,
+    augment_science_file,
+    correct_dichoric,
+    remove_continuum,
+    calibrate_with_flats,
+)
 from pipeline.tasks.cfht_weather import update_cfht_weather
 
 
@@ -12,18 +18,18 @@ def reduce_channel_exposure(config: ChannelReduction) -> None:
     logger = get_logger()
     logger.info(f"Starting channel exposure reduction with settings:\n {config.model_dump_json(indent=2)}")
 
-    # Load in the existing file store
-    resolver = build_filestore()
-
     # Synchronise with any external data sources which may have changed
-    update_cfht_weather(resolver)
+    update_cfht_weather()
+
+    # Load in the existing file store and ensure its up to date
+    resolver = build_filestore()
 
     # Ensure that our config is fully specified using the resolver
     config.resolve_missing(resolver)
 
     # And now we can run the reduction
     augment_science_file()
-    preprocess()
+    preprocess_exposure(config, resolver)
     correct_dichoric()
     remove_continuum()
     calibrate_with_flats()
