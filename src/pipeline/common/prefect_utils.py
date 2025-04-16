@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from prefect import flow, task, Flow
+from prefect import Flow, flow, task
 from prefect.client.schemas.objects import FlowRun, State
 
 # from functools import wraps

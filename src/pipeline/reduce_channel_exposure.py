@@ -1,15 +1,16 @@
 from pathlib import Path
-from pipeline.common.prefect_utils import pipeline_flow
+
 from pipeline.common.log import get_logger
-from pipeline.tasks.build_filestore import build_filestore
+from pipeline.common.prefect_utils import pipeline_flow
 from pipeline.config import ChannelReduction
 from pipeline.tasks import (
-    preprocess_exposure,
     augment_science_file,
-    correct_dichoric,
-    remove_continuum,
     calibrate_with_flats,
+    correct_dichoric,
+    preprocess_exposure,
+    remove_continuum,
 )
+from pipeline.tasks.build_filestore import build_filestore
 from pipeline.tasks.cfht_weather import update_cfht_weather
 
 
@@ -38,6 +39,5 @@ def reduce_star_channel_exposure(config: ChannelReduction) -> None:
 if __name__ == "__main__":
     # TODO: allow string and relative dir validation
     science_file = Path(__file__).parents[4] / "data/runs/run_id=25_056_084/science_blue.fits"
-    print(str(science_file))
     config = ChannelReduction(science_file=science_file)
     reduce_star_channel_exposure(config)

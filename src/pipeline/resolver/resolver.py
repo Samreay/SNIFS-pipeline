@@ -1,15 +1,17 @@
 from functools import cached_property
-from pipeline.resolver.common import FileStoreEntry, FileStoreDataFrame, extract_file_details
-from pydantic import BaseModel, field_validator
 from pathlib import Path
+
 import polars as pl
-from pipeline.resolver import file_match_registry
-from pipeline.resolver.common import FileType
+from pydantic import BaseModel, field_validator
+
 from pipeline.config.global_settings import settings
+from pipeline.resolver import file_match_registry
+from pipeline.resolver.common import FileStoreDataFrame, FileStoreEntry, FileType, extract_file_details
 
 
 class Resolver(BaseModel):
-    # TODO: discuss how cloud focused this should be. Ideally this resolve had both local pref and cloud fetching built in.
+    # TODO: discuss how cloud focused this should be.
+    # TODO: Ideally this resolve had both local pref and cloud fetching built in.
     file_store_path: Path
 
     data_path: Path

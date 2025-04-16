@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from pipeline.resolver.common import FileStoreEntry, FileStoreDataFrame, FileType
+from pipeline.resolver.common import FileStoreDataFrame, FileStoreEntry, FileType
 
 
 class FileMatchRegistry:
@@ -35,7 +35,8 @@ class FileMatchRegistry:
     ) -> FileStoreEntry:
         matches = self.get_matches(file_type, primary, file_store)
         assert matches, (
-            f"No matches found for {file_type} for primary file {primary.model_dump_json(indent=2) if primary is not None else None}"
+            f"No matches found for {file_type} for primary file "
+            f"{primary.model_dump_json(indent=2) if primary is not None else None}"
         )
         return matches[0]
 

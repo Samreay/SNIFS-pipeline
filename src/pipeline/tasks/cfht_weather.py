@@ -1,17 +1,17 @@
+from datetime import datetime as dt
+from datetime import timedelta as td
+from datetime import timezone as tz
 from pathlib import Path
+
+import pandera as pa
+import polars as pl
+from pandera.polars import DataFrameModel
+from pandera.typing.polars import DataFrame, Series
+
 from pipeline.common.log import get_logger
 from pipeline.common.prefect_utils import pipeline_task
 from pipeline.resolver.common import UTCDatetime
 from pipeline.resolver.resolver import Resolver
-import polars as pl
-from datetime import timedelta as td
-from datetime import timezone as tz
-from datetime import datetime as dt
-
-
-from pandera.polars import DataFrameModel
-from pandera.typing.polars import Series, DataFrame
-import pandera as pa
 
 
 class Weather(DataFrameModel):
@@ -78,7 +78,7 @@ def update_cfht_weather(
         logger.info("Fetching CFHT weather data")
         now = dt.now(tz=tz.utc)
         lookback_time = now - td(days=lookback_time_days)
-        years_to_fetch = set([lookback_time.year, now.year])
+        years_to_fetch = {lookback_time.year, now.year}
         dfs = []
         if not refresh and expected_location.exists():
             dfs.append(pl.read_parquet(expected_location))

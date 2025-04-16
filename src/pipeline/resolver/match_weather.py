@@ -1,5 +1,6 @@
-from pipeline.resolver.common import FileStoreDataFrame, FileStoreEntry, FileType
 import polars as pl
+
+from pipeline.resolver.common import FileStoreDataFrame, FileStoreEntry, FileType
 from pipeline.resolver.registry import file_match_registry
 
 

@@ -1,14 +1,14 @@
-from collections.abc import Callable
 import json
 import logging
 import sys
 import traceback
+from collections.abc import Callable
+from datetime import timezone as tz
 from functools import partial, wraps
 from sys import stderr
 from types import FrameType
 from typing import TYPE_CHECKING, TextIO, cast
 
-from datetime import timezone as tz
 from loguru import logger
 from opentelemetry import trace
 from opentelemetry.trace import INVALID_SPAN, INVALID_SPAN_CONTEXT
@@ -33,7 +33,7 @@ LOGGERS_TO_IGNORE += [
 ]
 
 
-def sink_serializer(
+def sink_serializer(  # noqa: C901
     service: str,
     message: "Message",
     file: TextIO = stderr,
@@ -130,7 +130,7 @@ def get_logger() -> logging.Logger:
         prefect_logger = get_run_logger()
         # TODO: remove this and use loguru later on
         return prefect_logger  # type: ignore
-        extra = getattr(prefect_logger, "extra")
+        extra = prefect_logger.extra
 
     except Exception:
         return logger  # type: ignore

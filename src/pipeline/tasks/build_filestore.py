@@ -1,8 +1,9 @@
+import polars as pl
+
 from pipeline.common.log import get_logger
 from pipeline.common.prefect_utils import pipeline_task
 from pipeline.resolver.common import FileStoreDataFrame, extract_file_details
 from pipeline.resolver.resolver import Resolver
-import polars as pl
 
 
 @pipeline_task()
@@ -40,7 +41,7 @@ def build_filestore(refresh: bool = False) -> Resolver:
     logger.info(f"Writing filestore with shape {df.shape} to {resolver.file_store_path}")
     resolver.save_filestore(df)
     # Validate the file store exists and can be loaded
-    resolver.file_store
+    _ = resolver.file_store
     return resolver
 
 

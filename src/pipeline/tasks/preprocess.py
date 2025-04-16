@@ -1,8 +1,9 @@
+import numpy as np
+
 from pipeline.common.prefect_utils import pipeline_flow, pipeline_task
 from pipeline.config.reduce_channel_exposure import ChannelReduction
 from pipeline.resolver.resolver import Resolver
 from pipeline.tasks.common import load_header, load_image_data
-import numpy as np
 
 
 @pipeline_task()

@@ -1,15 +1,16 @@
+from datetime import datetime as dt
+from datetime import timezone as tz
 from enum import StrEnum
 from pathlib import Path
-from pydantic import BaseModel
-from datetime import datetime as dt
-from astropy.io import fits
-from pandera.polars import DataFrameModel
-from pandera.typing.polars import Series, DataFrame
-from pandera.engines.polars_engine import DateTime
-import pandera as pa
 from typing import Annotated
+
+import pandera as pa
 import polars.selectors as cs
-from datetime import timezone as tz
+from astropy.io import fits
+from pandera.engines.polars_engine import DateTime
+from pandera.polars import DataFrameModel
+from pandera.typing.polars import DataFrame, Series
+from pydantic import BaseModel
 
 UTCDatetime = Annotated[DateTime, False, "UTC", "ms"]
 DATETIME_CONVERSION_EXPR = cs.datetime().dt.cast_time_unit("ms").dt.convert_time_zone("UTC")
@@ -87,6 +88,27 @@ HEADER_MAP = {
 }
 
 
+def extra_details_from_fits(path: Path) -> dict[str, str | int | float | dt]:
+    values = {}
+    with fits.open(path) as hdul:  # type: ignore
+        # Assume headers are in the first HDU
+        header = hdul[0].header  # type: ignore
+        # Extract relevant information from the header
+        for column in FileStoreModel.to_schema().columns:
+            expected_column_name = HEADER_MAP.get(column, column)
+            if expected_column_name in header:
+                value = header[expected_column_name]
+                if isinstance(value, str):
+                    value = value.strip()
+                if column.startswith("time"):
+                    if isinstance(value, int):
+                        value = dt.fromtimestamp(value, tz=tz.utc)
+                    elif isinstance(value, str):
+                        value = dt.strptime(value, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=tz.utc)
+                values[column] = value
+    return values
+
+
 def extract_file_details(path: Path, relative_path: Path) -> FileStoreDataFrame:
     values = {
         "file_path": str(relative_path),
@@ -94,22 +116,7 @@ def extract_file_details(path: Path, relative_path: Path) -> FileStoreDataFrame:
         "time_added": dt.now(tz=tz.utc),
     }
     if path.suffix == ".fits":
-        with fits.open(path) as hdul:  # type: ignore
-            # Assume headers are in the first HDU
-            header = hdul[0].header  # type: ignore
-            # Extract relevant information from the header
-            for column in FileStoreModel.to_schema().columns:
-                expected_column_name = HEADER_MAP.get(column, column)
-                if expected_column_name in header:
-                    value = header[expected_column_name]
-                    if isinstance(value, str):
-                        value = value.strip()
-                    if column.startswith("time"):
-                        if isinstance(value, int):
-                            value = dt.fromtimestamp(value, tz=tz.utc)
-                        elif isinstance(value, str):
-                            value = dt.strptime(value, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=tz.utc)
-                    values[column] = value
+        values = extra_details_from_fits(path) | values
 
     # Add any hive partitions in the path
     for directory in str(relative_path).split("/"):

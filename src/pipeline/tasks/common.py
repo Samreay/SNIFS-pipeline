@@ -1,9 +1,11 @@
 from pathlib import Path
+
+import numpy as np
 from astropy.io import fits
 from astropy.io.fits import Header
+
 from pipeline.common.log import get_logger
 from pipeline.common.prefect_utils import pipeline_task
-import numpy as np
 
 
 @pipeline_task()

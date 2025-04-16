@@ -1,7 +1,6 @@
-from pandera.polars import DataFrameSchema
-import polars as pl
-
 import pandera as pa
+import polars as pl
+from pandera.polars import DataFrameSchema
 
 
 @pa.check_types

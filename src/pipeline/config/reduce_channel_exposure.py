@@ -1,8 +1,10 @@
-from pipeline.common.log import get_logger
-from pipeline.resolver.resolver import Resolver
+from datetime import datetime as dt
+
 from pydantic import Field, FilePath
 from pydantic_settings import BaseSettings
-from datetime import datetime as dt
+
+from pipeline.common.log import get_logger
+from pipeline.resolver.resolver import Resolver
 
 
 # TODO: I dont like any of these being FilePaths, but figured we'll start here
@@ -13,7 +15,8 @@ class ChannelReduction(BaseSettings):
 
     arc_file: FilePath = Field(
         default=None,
-        description="Location of the arc file(s). For a single exposure, the arc is usually taken immediately after the science exposure."
+        description="Location of the arc file(s). For a single exposure, the arc is usually taken "
+        "immediately after the science exposure."
         "For two exposures, the arc is usually in the middle.",
     )  # type: ignore
 

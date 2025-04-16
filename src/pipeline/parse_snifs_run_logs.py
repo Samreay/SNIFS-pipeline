@@ -1,8 +1,6 @@
 from pipeline.common.prefect_utils import pipeline_flow
+from pipeline.tasks import parse_snifs_run_logs
 from pipeline.tasks.build_filestore import build_filestore
-from pipeline.tasks import (
-    parse_snifs_run_logs,
-)
 
 
 @pipeline_flow()
