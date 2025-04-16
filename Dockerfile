@@ -1,4 +1,4 @@
-FROM python:3.12-slim AS builder
+FROM python:3.13-slim AS builder
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update && apt-get install -y git curl gcc libpq-dev
@@ -13,21 +13,12 @@ ENV UV_PROJECT_ENVIRONMENT=/usr/local/ \
 
 
 WORKDIR /workspace
-ARG PACKAGE
 
 # Install third party dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-      uv sync --all-extras --frozen --no-install-workspace --no-dev --package $PACKAGE
+      uv sync --all-extras --frozen --no-dev
 
 # Now copy in our code and install local packages
-COPY projects /workspace/projects
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-      uv sync --all-extras --frozen --no-dev --package $PACKAGE
-
-RUN chmod +x /workspace/projects/$PACKAGE/src/$PACKAGE/start.sh
-WORKDIR /workspace/projects/$PACKAGE/src/$PACKAGE
-CMD [ "./start.sh" ]
+COPY src /workspace

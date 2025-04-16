@@ -22,21 +22,9 @@ precommit:
 test:
 	uv run pytest tests
 
-compose:
-	chmod a+rw configs/grafana/dashboards
-	docker-compose up --build
-
 tests: test
 install: install_uv install_python install_deps install_precommit
 
 
-docker_receiver:
-	docker buildx build -t receiver -f Dockerfile --build-arg PACKAGE=receiver .
-	docker run -p 8000:8000 -e PORT=8000 -it receiver
-
-docker_poller:
-	docker buildx build -t poller -f Dockerfile --build-arg PACKAGE=poller .
-	docker run -p 8000:8000 -e PORT=8000 -it poller
-
 docker_prefect:
-	docker run -p 4200:4200 --env PREFECT_SERVER_API_HOST="0.0.0.0" prefecthq/prefect:3-latest prefect server start 
+	docker run -p 4200:4200 --env PREFECT_SERVER_API_HOST="0.0.0.0" prefecthq/prefect:3-latest prefect server start
